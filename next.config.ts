@@ -7,16 +7,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "img.youtube.com",
       },
-    ],
-  },
-  async rewrites() {
-    return [
       {
-        source: "/blog/:path*",
-        destination:
-          "https://wordpress-1568541-6224097.cloudwaysapps.com/:path*",
+        protocol: "https",
+        hostname: "wordpress-1568541-6224097.cloudwaysapps.com",
       },
-    ];
+    ],
   },
 };
 

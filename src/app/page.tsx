@@ -20,23 +20,7 @@ import {
   Gavel,
 } from "lucide-react"
 
-/* ── 색상 상수 ── */
-const COLORS = {
-  primary: "#2d2d2d",
-  accent: "#9e5e5a",
-  accentLight: "#efe6e5",
-  primaryBg: "#f0eceb",
-  text: "#1a1a1a",
-  textLight: "#4a4a4a",
-  textMuted: "#888888",
-  border: "#d9d5d4",
-  white: "#ffffff",
-  bg: "#f5f2f1",
-}
-
-/* ── 전화번호/링크 상수 ── */
-const PHONE = "010-6624-7140"
-const KAKAO_URL = "https://go.knp-law.com/4rcCmAR"
+import { COLORS, PHONE, KAKAO_URL } from "@/lib/constants"
 const OFFICE_ADDRESS = "대구광역시 수성구 동대구로353(범어동, 범어353타워) 7층"
 
 /* ── 변호사별 데이터 ── */
@@ -353,6 +337,13 @@ export default function Home() {
                 {item.label}
               </button>
             ))}
+            <a
+              href="/blog"
+              className="text-sm transition-colors duration-200 hover:opacity-70"
+              style={{ color: COLORS.textLight }}
+            >
+              블로그
+            </a>
           </div>
           <button
             onClick={() => scrollToSection("consultation")}
