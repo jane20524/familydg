@@ -3,7 +3,7 @@ import { NextResponse } from "next/server"
 
 export async function POST(request: Request) {
   try {
-    const { caseTypes, name, phone, content } = await request.json()
+    const { caseTypes, preferredLawyer, name, phone, content } = await request.json()
 
     if (!name || !phone) {
       return NextResponse.json(
@@ -45,6 +45,10 @@ export async function POST(request: Request) {
             <tr>
               <td style="padding: 12px; background: #f5f2f1; font-weight: bold; border: 1px solid #d9d5d4;">사건 유형</td>
               <td style="padding: 12px; border: 1px solid #d9d5d4;">${caseTypeText}</td>
+            </tr>
+            <tr>
+              <td style="padding: 12px; background: #f5f2f1; font-weight: bold; border: 1px solid #d9d5d4;">선호 변호사</td>
+              <td style="padding: 12px; border: 1px solid #d9d5d4;">${preferredLawyer || "상관없음"}</td>
             </tr>
             <tr>
               <td style="padding: 12px; background: #f5f2f1; font-weight: bold; border: 1px solid #d9d5d4;">상담 내용</td>

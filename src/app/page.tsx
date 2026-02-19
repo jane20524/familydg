@@ -35,7 +35,7 @@ const COLORS = {
 }
 
 /* ── 전화번호/링크 상수 ── */
-const PHONE = "053-741-7150"
+const PHONE = "010-6624-7140"
 const KAKAO_URL = "https://go.knp-law.com/4rcCmAR"
 const OFFICE_ADDRESS = "대구광역시 수성구 동대구로353(범어동, 범어353타워) 7층"
 
@@ -108,7 +108,7 @@ function FAQItem({
         className="w-full flex items-center justify-between gap-4 p-5 md:p-6 text-left transition-all duration-300"
         style={{ color: COLORS.text }}
       >
-        <span className="font-medium text-sm md:text-base leading-relaxed">{question}</span>
+        <span className={`${isOpen ? "font-bold" : "font-medium"} text-base md:text-base leading-relaxed transition-all duration-300`}>{question}</span>
         <ChevronDown
           size={20}
           className={`flex-shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
@@ -117,7 +117,7 @@ function FAQItem({
       </button>
       <div className={`overflow-hidden transition-all duration-300 ${isOpen ? "max-h-96" : "max-h-0"}`}>
         <p
-          className="px-5 md:px-6 pb-5 md:pb-6 text-sm leading-relaxed"
+          className="px-5 md:px-6 pb-5 md:pb-6 text-base md:text-sm leading-relaxed"
           style={{ color: COLORS.textLight }}
           dangerouslySetInnerHTML={{ __html: answer }}
         />
@@ -145,6 +145,7 @@ export default function Home() {
 
   const [formData, setFormData] = useState({
     caseTypes: [] as string[],
+    preferredLawyer: "상관없음" as string,
     name: "",
     phone: "",
     content: "",
@@ -174,6 +175,7 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           caseTypes: formData.caseTypes,
+          preferredLawyer: formData.preferredLawyer,
           name: formData.name,
           phone: formData.phone,
           content: formData.content,
@@ -183,7 +185,7 @@ export default function Home() {
       if (!res.ok) throw new Error("발송 실패")
 
       setSubmitState("success")
-      setFormData({ caseTypes: [], name: "", phone: "", content: "", reviewTimeAgree: true, privacyAgree: true })
+      setFormData({ caseTypes: [], preferredLawyer: "상관없음", name: "", phone: "", content: "", reviewTimeAgree: true, privacyAgree: true })
     } catch {
       setSubmitState("error")
     }
@@ -194,40 +196,62 @@ export default function Home() {
     if (el) el.scrollIntoView({ behavior: "smooth" })
   }
 
+  const mainQuestionCount = 5
   const matchQuestions = [
     {
-      question: "지금 가장 큰 고민은 무엇인가요?",
+      question: "어떤 고민이 있으신가요?",
+      bonus: false,
       options: [
-        { text: "재산분할·위자료 등 경제적 문제를 확실히 정리하고 싶어요", score: 0 },
-        { text: "상간소송·양육권 등 관계 문제를 해결하고 싶어요", score: 1 },
+        { text: "재산분할, 위자료 등 경제적 문제", score: 0 },
+        { text: "상간, 혼인 파탄 등 책임소재 문제", score: 1 },
+        { text: "양육권, 면접교섭 등 자녀 관계 문제", score: 1 },
       ],
     },
     {
-      question: "변호사와 처음 상담할 때, 어떤 분위기를 원하시나요?",
+      question: "이혼과 엮인 법률문제가 있다면?",
+      bonus: false,
       options: [
-        { text: "핵심을 빠르게 짚어주고, 전략부터 제시해줬으면 해요", score: 0 },
-        { text: "제 이야기를 충분히 들어주고, 마음까지 공감해줬으면 해요", score: 1 },
+        { text: "가정폭력, 스토킹, 사기 등 형사 관련 쟁점", score: 0 },
+        { text: "회생, 파산 등 경제 관련 쟁점", score: 0 },
+        { text: "잘 모르겠어요", score: 0 },
       ],
     },
     {
-      question: "소송이 진행되는 동안, 변호사에게 바라는 것은?",
+      question: "처음 상담할 때 어떤 분위기를 원하시나요?",
+      bonus: false,
       options: [
-        { text: "\"제가 알아서 잘 해드릴게요\" — 믿고 맡길 수 있는 스타일", score: 0 },
-        { text: "\"같이 결정해요\" — 과정마다 설명하고 함께 결정하는 스타일", score: 2 },
+        { text: "눈물은 뚝! 법률과 판례를 바탕으로 한 객관적이고 전문적인 분위기", score: 0 },
+        { text: "눈물 펑펑! 이야기를 충분히 듣고 공감하고 함께 방향을 찾아가는 따뜻한 분위기", score: 1 },
+        { text: "둘 다 괜찮아요", score: 0 },
       ],
     },
     {
-      question: "상대방이 갑자기 예상 밖의 행동을 한다면?",
+      question: "소송 동안 변호사에게 가장 바라는 것은?",
+      bonus: false,
       options: [
-        { text: "즉시 단호하게 차단하고, 법적으로 대응해줬으면 해요", score: 0 },
-        { text: "상황을 차분히 살핀 뒤, 가장 효과적인 방법을 찾아줬으면 해요", score: 1 },
+        { text: "긴급한 상황에서의 빠른 대응", score: 0 },
+        { text: "심리적 불안함을 안심시켜주는 대응", score: 1 },
+        { text: "진행과정에 대한 친절한 대응", score: 1 },
+        { text: "복잡한 상황을 깔끔하게 정리해주는 대응", score: 0 },
       ],
     },
     {
-      question: "나에게 맞는 변호사는 어떤 사람인가요?",
+      question: "내가 만나고 싶은 변호사는?",
+      bonus: false,
       options: [
-        { text: "명료하고 든든한 법률 파트너", score: 0 },
-        { text: "따뜻하고 꼼꼼한 내 편", score: 1 },
+        { text: "마음을 어루만져주는 변호사", score: 2 },
+        { text: "속시원하게 이야기해주는 변호사", score: 0 },
+        { text: "꼼꼼하고 섬세한 변호사", score: 1 },
+        { text: "든든하게 기댈 수 있는 변호사", score: 0 },
+      ],
+    },
+    {
+      question: "상담 시 원하는 차는?",
+      bonus: true,
+      options: [
+        { text: "커피", score: 0 },
+        { text: "차", score: 0 },
+        { text: "물", score: 0 },
       ],
     },
   ]
@@ -341,136 +365,99 @@ export default function Home() {
       </nav>
 
       {/* ═══════════ S1. 히어로 ═══════════ */}
-      <section
-        className="min-h-screen flex items-center relative overflow-hidden"
-        style={{ backgroundColor: COLORS.white }}
-      >
-        <div className="w-full max-w-7xl mx-auto px-6 md:px-12 py-20">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            {/* 텍스트 영역 */}
-            <div className="order-2 lg:order-1">
-              <span
-                className="inline-block px-4 py-2 rounded-full text-xs font-medium tracking-wide mb-8"
+      <section className="relative" style={{ backgroundColor: COLORS.primary }}>
+        {/* 16:9 이미지 영역 */}
+        <div className="md:max-w-6xl md:mx-auto md:pt-10">
+          <div className="relative w-full aspect-[16/9] md:rounded-2xl md:overflow-hidden">
+            <Image
+              src="/images/hero.jpg"
+              alt="홍민정·최지연 변호사"
+              fill
+              className="object-cover"
+              priority
+            />
+            {/* 하단 그라데이션: 이미지 → 어두운 배경으로 자연스럽게 연결 */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: "linear-gradient(to bottom, transparent 40%, rgba(45,45,45,0.4) 70%, #2d2d2d 100%)",
+              }}
+            />
+          </div>
+        </div>
+
+        {/* 텍스트 영역: 어두운 배경 위 */}
+        <div style={{ backgroundColor: COLORS.primary }}>
+          <div className="max-w-7xl mx-auto px-6 md:px-12 pt-10 pb-14 md:pt-12 md:pb-16">
+            <span
+              className="inline-block px-4 py-2 rounded-full text-xs font-medium tracking-wide mb-6"
+              style={{
+                color: COLORS.white,
+                backgroundColor: "rgba(158,94,90,0.7)",
+              }}
+            >
+              대한변협 등록 이혼전문변호사 · 대구
+            </span>
+
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-5 text-white">
+              대구 이혼소송,
+              <br />
+              <span style={{ color: "#e8b4b1" }}>
+                대구에서 사건을 많이 해본
+                <br />
+                변호사는 다릅니다.
+              </span>
+            </h1>
+
+            <p className="text-base md:text-lg leading-relaxed mb-8 text-white/80">
+              대한변협 등록 이혼전문변호사
+              <br />
+              <strong className="text-white">홍민정 · 최지연 변호사</strong>가
+              <br />
+              당신의 새로운 시작을 함께합니다.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 mb-8">
+              <button
+                onClick={() => scrollToSection("consultation")}
+                className="inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-xl font-semibold text-base transition-all duration-300 hover:opacity-90"
                 style={{
-                  color: COLORS.accent,
-                  backgroundColor: COLORS.accentLight,
+                  backgroundColor: COLORS.accent,
+                  color: COLORS.white,
                 }}
               >
-                대한변협 등록 이혼전문변호사 · 대구
-              </span>
-
-              <h1
-                className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-6"
-                style={{ color: COLORS.text }}
+                <Lock size={18} />
+                지금 바로 비밀 상담 시작하기
+              </button>
+              <a
+                href={`tel:${PHONE}`}
+                className="inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-xl font-semibold text-base transition-all duration-300 hover:bg-white/10"
+                style={{
+                  backgroundColor: "transparent",
+                  color: COLORS.white,
+                  border: "1px solid rgba(255,255,255,0.3)",
+                }}
               >
-                대구 이혼소송,
-                <br />
-                <span style={{ color: COLORS.accent }}>
-                  대구에서 사건을 많이 해본
-                  <br />
-                  변호사는 다릅니다.
-                </span>
-              </h1>
-
-              <p
-                className="text-base md:text-lg leading-relaxed mb-8"
-                style={{ color: COLORS.textLight }}
-              >
-                대한변협 등록 이혼전문변호사
-                <br />
-                <strong style={{ color: COLORS.text }}>홍민정 · 최지연 변호사</strong>가
-                <br />
-                당신의 새로운 시작을 함께합니다.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-3 mb-10">
-                <button
-                  onClick={() => scrollToSection("consultation")}
-                  className="inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-xl font-semibold text-base transition-all duration-300 hover:opacity-90"
-                  style={{
-                    backgroundColor: COLORS.accent,
-                    color: COLORS.white,
-                  }}
-                >
-                  <Lock size={18} />
-                  지금 바로 비밀 상담 시작하기
-                </button>
-                <a
-                  href={`tel:${PHONE}`}
-                  className="inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-xl font-semibold text-base transition-all duration-300 hover:bg-gray-50"
-                  style={{
-                    backgroundColor: "transparent",
-                    color: COLORS.text,
-                    border: `1px solid ${COLORS.border}`,
-                  }}
-                >
-                  <Phone size={18} />
-                  긴급 전화상담
-                </a>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {["재산분할", "위자료", "양육권", "상간소송", "가정폭력", "이혼소송"].map(
-                  (tag, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1.5 rounded-lg text-sm"
-                      style={{
-                        backgroundColor: COLORS.accentLight,
-                        color: COLORS.accent,
-                      }}
-                    >
-                      {tag}
-                    </span>
-                  )
-                )}
-              </div>
+                <Phone size={18} />
+                긴급 전화상담
+              </a>
             </div>
 
-            {/* 이미지 영역 */}
-            <div className="order-1 lg:order-2">
-              <div
-                className="relative w-full aspect-[4/5] rounded-3xl overflow-hidden"
-                style={{ backgroundColor: COLORS.primaryBg }}
-              >
-                <Image
-                  src="/images/2lawyers.png"
-                  alt="홍민정·최지연 변호사"
-                  fill
-                  className="object-cover"
-                  priority
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.style.display = "none"
-                    const placeholder = target.parentElement?.querySelector(
-                      ".placeholder"
-                    ) as HTMLElement
-                    if (placeholder) placeholder.style.display = "flex"
-                  }}
-                />
-                <div
-                  className="placeholder absolute inset-0 items-center justify-center hidden"
-                  style={{ backgroundColor: COLORS.accentLight }}
-                >
-                  <div className="text-center">
-                    <p className="text-sm mb-2" style={{ color: COLORS.textMuted }}>
-                      변호사 프로필 사진
-                    </p>
-                    <p className="text-xs" style={{ color: COLORS.textMuted }}>
-                      /public/images/hero-lawyers.jpg
-                    </p>
-                  </div>
-                </div>
-                <div
-                  className="absolute bottom-0 left-0 right-0 p-6"
-                  style={{
-                    background: "linear-gradient(transparent, rgba(58,58,58,0.85))",
-                  }}
-                >
-                  <p className="text-white text-sm opacity-80">법무법인 김앤파트너스 대구</p>
-                  <p className="text-white text-xl font-bold">홍민정 · 최지연 변호사</p>
-                </div>
-              </div>
+            <div className="flex flex-wrap gap-2">
+              {["재산분할", "위자료", "양육권", "상간소송", "가정폭력", "이혼소송"].map(
+                (tag, i) => (
+                  <span
+                    key={i}
+                    className="px-3 py-1.5 rounded-lg text-sm"
+                    style={{
+                      backgroundColor: "rgba(255,255,255,0.12)",
+                      color: "rgba(255,255,255,0.85)",
+                    }}
+                  >
+                    {tag}
+                  </span>
+                )
+              )}
             </div>
           </div>
         </div>
@@ -490,7 +477,7 @@ export default function Home() {
               나에게 맞는 변호사는?
             </h2>
             <p className="text-sm" style={{ color: COLORS.textLight }}>
-              5가지 질문에 답하면, 내 상황에 딱 맞는 변호사를 알려드려요.
+              5가지 질문 + 번외편으로,<br className="md:hidden" /> 내 상황에 딱 맞는 변호사를 알려드려요.
             </p>
           </div>
 
@@ -521,15 +508,25 @@ export default function Home() {
                       className="text-xs font-semibold px-2.5 py-1 rounded-full"
                       style={{ backgroundColor: COLORS.accentLight, color: COLORS.accent }}
                     >
-                      {matchStep + 1} / {matchQuestions.length}
+                      {matchQuestions[matchStep].bonus
+                        ? `번외편 ${matchStep - mainQuestionCount + 1}`
+                        : `${matchStep + 1} / ${mainQuestionCount}`}
                     </span>
                   </div>
                   <h3
-                    className="text-lg md:text-xl font-bold mb-8"
+                    className="text-lg md:text-xl font-bold mb-2"
                     style={{ color: COLORS.text }}
                   >
                     {matchQuestions[matchStep].question}
                   </h3>
+                  <p
+                    className="text-sm mb-8"
+                    style={{ color: COLORS.textMuted }}
+                  >
+                    {matchQuestions[matchStep].bonus
+                      ? "상담 때 참고할게요, 편하게 골라주세요!"
+                      : "하나를 선택해 주세요."}
+                  </p>
                   <div className="flex flex-col gap-3">
                     {matchQuestions[matchStep].options.map((opt, i) => (
                       <button
@@ -1255,7 +1252,7 @@ export default function Home() {
               className="text-2xl md:text-3xl font-bold"
               style={{ color: COLORS.text }}
             >
-              대구가정법원 사건, 이만큼 해봤습니다
+              대구가정법원 사건,<br className="md:hidden" /> 이만큼 해봤습니다
             </h2>
             <p className="text-base mt-3" style={{ color: COLORS.textLight }}>
               수많은 대구가정법원 사건 경험이 곧 전략입니다
@@ -1398,12 +1395,12 @@ export default function Home() {
               </p>
               <div className="grid grid-cols-2 gap-2">
                 {[
+                  "이혼소송",
+                  "상간소송",
                   "재산분할",
                   "위자료",
-                  "상간소송",
                   "양육권/양육비",
                   "가정폭력",
-                  "이혼소송",
                   "기타",
                 ].map((type) => (
                   <label
@@ -1447,6 +1444,45 @@ export default function Home() {
               </div>
             </div>
 
+            {/* 선호 변호사 */}
+            <div className="mb-6">
+              <p
+                className="text-sm mb-3 font-medium"
+                style={{ color: COLORS.textLight }}
+              >
+                1:1 상담을 원하는 변호사
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                {["홍민정 변호사", "최지연 변호사", "상관없음"].map((option) => {
+                  const isLawyer = option.includes("변호사");
+                  const lawyerName = isLawyer ? option.replace(" 변호사", "") : null;
+                  return (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, preferredLawyer: option })}
+                      className="px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300"
+                      style={{
+                        backgroundColor: formData.preferredLawyer === option ? COLORS.accentLight : COLORS.bg,
+                        border: formData.preferredLawyer === option ? `1px solid ${COLORS.accent}` : `1px solid ${COLORS.border}`,
+                        color: formData.preferredLawyer === option ? COLORS.accent : COLORS.text,
+                      }}
+                    >
+                      <span className="hidden md:inline">{option}</span>
+                      {isLawyer ? (
+                        <span className="md:hidden flex flex-col items-center leading-tight">
+                          <span className="text-base font-bold">{lawyerName}</span>
+                          <span className="text-xs font-normal">변호사</span>
+                        </span>
+                      ) : (
+                        <span className="md:hidden">{option}</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* 입력 필드 */}
             <div className="grid grid-cols-2 gap-3 mb-6">
               <input
@@ -1462,6 +1498,8 @@ export default function Home() {
                   border: `1px solid ${COLORS.border}`,
                   color: COLORS.text,
                 }}
+                onFocus={(e) => e.currentTarget.style.borderColor = COLORS.accent}
+                onBlur={(e) => e.currentTarget.style.borderColor = COLORS.border}
               />
               <input
                 type="tel"
@@ -1476,6 +1514,8 @@ export default function Home() {
                   border: `1px solid ${COLORS.border}`,
                   color: COLORS.text,
                 }}
+                onFocus={(e) => e.currentTarget.style.borderColor = COLORS.accent}
+                onBlur={(e) => e.currentTarget.style.borderColor = COLORS.border}
               />
               <textarea
                 placeholder="사건 내용을 간략히 적어주세요 (비밀보장)"
@@ -1490,6 +1530,8 @@ export default function Home() {
                   border: `1px solid ${COLORS.border}`,
                   color: COLORS.text,
                 }}
+                onFocus={(e) => e.currentTarget.style.borderColor = COLORS.accent}
+                onBlur={(e) => e.currentTarget.style.borderColor = COLORS.border}
               />
             </div>
 
@@ -1606,7 +1648,8 @@ export default function Home() {
 
                 {submitState === "error" && (
                   <p className="text-center text-sm mt-3" style={{ color: "#e74c3c" }}>
-                    발송에 실패했습니다. 전화로 문의해 주세요.
+                    발송에 실패했습니다.{" "}
+                    <a href={`tel:${PHONE}`} className="underline font-semibold">{PHONE}</a>으로 전화 문의해 주세요.
                   </p>
                 )}
 

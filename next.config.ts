@@ -9,6 +9,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/blog/:path*",
+        destination:
+          "https://wordpress-1568541-6224097.cloudwaysapps.com/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
