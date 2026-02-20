@@ -238,6 +238,22 @@ export default function Home() {
         { text: "물", score: 0 },
       ],
     },
+    {
+      question: "탕수육 스타일은?",
+      bonus: true,
+      options: [
+        { text: "부먹", score: 0 },
+        { text: "찍먹", score: 0 },
+      ],
+    },
+    {
+      question: "당신은 어느 파?",
+      bonus: true,
+      options: [
+        { text: "민초파", score: 0 },
+        { text: "반민초파", score: 0 },
+      ],
+    },
   ]
 
   const handleMatchAnswer = (score: number) => {
@@ -356,99 +372,94 @@ export default function Home() {
       </nav>
 
       {/* ═══════════ S1. 히어로 ═══════════ */}
-      <section className="relative" style={{ backgroundColor: COLORS.primary }}>
-        {/* 16:9 이미지 영역 */}
-        <div className="md:max-w-6xl md:mx-auto md:pt-10">
-          <div className="relative w-full aspect-[16/9] md:rounded-2xl md:overflow-hidden">
-            <Image
-              src="/images/hero.jpg"
-              alt="홍민정·최지연 변호사"
-              fill
-              className="object-cover"
-              priority
-            />
-            {/* 하단 그라데이션: 이미지 → 어두운 배경으로 자연스럽게 연결 */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background: "linear-gradient(to bottom, transparent 40%, rgba(45,45,45,0.4) 70%, #2d2d2d 100%)",
-              }}
-            />
-          </div>
-        </div>
-
-        {/* 텍스트 영역: 어두운 배경 위 */}
-        <div style={{ backgroundColor: COLORS.primary }}>
-          <div className="max-w-7xl mx-auto px-6 md:px-12 pt-10 pb-14 md:pt-12 md:pb-16">
-            <span
-              className="inline-block px-4 py-2 rounded-full text-xs font-medium tracking-wide mb-6"
-              style={{
-                color: COLORS.white,
-                backgroundColor: "rgba(158,94,90,0.7)",
-              }}
-            >
-              대한변협 등록 이혼전문변호사 · 대구
-            </span>
-
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-5 text-white">
-              대구 이혼소송,
-              <br />
-              <span style={{ color: "#e8b4b1" }}>
-                대구에서 사건을 많이 해본
-                <br />
-                변호사는 다릅니다.
+      <section className="relative overflow-hidden" style={{ backgroundColor: COLORS.primary }}>
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="flex flex-col md:flex-row items-center md:gap-12 lg:gap-16">
+            {/* 좌측: 텍스트 */}
+            <div className="flex-1 pt-12 pb-8 md:py-20 lg:py-24 order-2 md:order-1">
+              <span
+                className="inline-block px-4 py-2 rounded-full text-xs font-medium tracking-wide mb-6"
+                style={{
+                  color: COLORS.white,
+                  backgroundColor: "rgba(158,94,90,0.7)",
+                }}
+              >
+                대한변협 등록 이혼전문변호사 · 대구
               </span>
-            </h1>
 
-            <p className="text-base md:text-lg leading-relaxed mb-8 text-white/80">
-              대한변협 등록 이혼전문변호사
-              <br />
-              <strong className="text-white">홍민정 · 최지연 변호사</strong>가
-              <br />
-              당신의 새로운 시작을 함께합니다.
-            </p>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-5 text-white">
+                대구 이혼소송,
+                <br />
+                <span style={{ color: "#e8b4b1" }}>
+                  대구에서 사건을 많이 해본
+                  <br />
+                  변호사는 다릅니다.
+                </span>
+              </h1>
 
-            <div className="flex flex-col sm:flex-row gap-3 mb-8">
-              <button
-                onClick={() => scrollToSection("consultation")}
-                className="inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-xl font-semibold text-base transition-all duration-300 hover:opacity-90"
-                style={{
-                  backgroundColor: COLORS.accent,
-                  color: COLORS.white,
-                }}
-              >
-                <Lock size={18} />
-                지금 바로 비밀 상담 시작하기
-              </button>
-              <a
-                href={`tel:${PHONE}`}
-                className="inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-xl font-semibold text-base transition-all duration-300 hover:bg-white/10"
-                style={{
-                  backgroundColor: "transparent",
-                  color: COLORS.white,
-                  border: "1px solid rgba(255,255,255,0.3)",
-                }}
-              >
-                <Phone size={18} />
-                긴급 전화상담
-              </a>
+              <p className="text-base md:text-lg leading-relaxed mb-8 text-white/80">
+                대한변협 등록 이혼전문변호사
+                <br />
+                <strong className="text-white">홍민정 · 최지연 변호사</strong>가
+                <br />
+                당신의 새로운 시작을 함께합니다.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3 mb-8">
+                <button
+                  onClick={() => scrollToSection("consultation")}
+                  className="inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-xl font-semibold text-base transition-all duration-300 hover:opacity-90"
+                  style={{
+                    backgroundColor: COLORS.accent,
+                    color: COLORS.white,
+                  }}
+                >
+                  <Lock size={18} />
+                  지금 바로 비밀 상담 시작하기
+                </button>
+                <a
+                  href={`tel:${PHONE}`}
+                  className="inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-xl font-semibold text-base transition-all duration-300 hover:bg-white/10"
+                  style={{
+                    backgroundColor: "transparent",
+                    color: COLORS.white,
+                    border: "1px solid rgba(255,255,255,0.3)",
+                  }}
+                >
+                  <Phone size={18} />
+                  긴급 전화상담
+                </a>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {["이혼소송", "상간소송", "재산분할", "위자료", "양육권", "가정폭력"].map(
+                  (tag, i) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1.5 rounded-lg text-sm"
+                      style={{
+                        backgroundColor: "rgba(255,255,255,0.12)",
+                        color: "rgba(255,255,255,0.85)",
+                      }}
+                    >
+                      {tag}
+                    </span>
+                  )
+                )}
+              </div>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              {["이혼소송", "상간소송", "재산분할", "위자료", "양육권", "가정폭력"].map(
-                (tag, i) => (
-                  <span
-                    key={i}
-                    className="px-3 py-1.5 rounded-lg text-sm"
-                    style={{
-                      backgroundColor: "rgba(255,255,255,0.12)",
-                      color: "rgba(255,255,255,0.85)",
-                    }}
-                  >
-                    {tag}
-                  </span>
-                )
-              )}
+            {/* 우측: 1:1 이미지 */}
+            <div className="flex-shrink-0 w-full md:w-[400px] lg:w-[480px] order-1 md:order-2 pt-8 md:pt-0">
+              <div className="relative w-full aspect-square md:aspect-square rounded-2xl overflow-hidden">
+                <Image
+                  src="/images/devA_hero.png"
+                  alt="홍민정·최지연 변호사"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -468,7 +479,7 @@ export default function Home() {
               나에게 맞는 변호사는?
             </h2>
             <p className="text-sm" style={{ color: COLORS.textLight }}>
-              5가지 질문 + 번외편으로,<br className="md:hidden" /> 내 상황에 딱 맞는 변호사를 알려드려요.
+              5가지 질문 + 번외편 3개로,<br className="md:hidden" /> 내 상황에 딱 맞는 변호사를 알려드려요.
             </p>
           </div>
 
